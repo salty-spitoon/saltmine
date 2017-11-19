@@ -35,7 +35,7 @@ class Miner(object):
 
     def __init__(self, year, league_id, from_file=None):    # future iterations may take OAuth key and secrets directly
 
-        if (year < 2001) or (year > 2017):
+        if (year is None) or (year < 2001) or (year > 2017):
             raise ValueError('Year not valid')
         self.year = ids[year - 2001]
 
