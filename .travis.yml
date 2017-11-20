@@ -8,11 +8,9 @@ python:
 #   only:
 #   - master
 before_install:
-- cd tests
 - openssl aes-256-cbc -K $encrypted_758739719b2f_key -iv $encrypted_758739719b2f_iv
   -in secrets.tar.enc -out secrets.tar -d
 - tar xvf secrets.tar
-- cd ..
 install:
 - pip install -r requirements.txt
 script:
