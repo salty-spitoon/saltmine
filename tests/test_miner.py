@@ -1,4 +1,5 @@
 import pytest
+import warnings
 from saltmine import miner
 
 ''''@pytest.fixture
@@ -9,17 +10,22 @@ def miner():
 
 
 def test_connect():
-    with pytest.raises(ValueError):
-        worker = miner.Miner(None, u'470610', from_file='oauth.json')
 
-    with pytest.raises(ValueError):
+    with warnings.catch_warnings(record=True) as w: # Note: this will not output warnings to log file
+
+        warnings.simplefilter('always')
+
         worker = miner.Miner(1999, u'470610', from_file='oauth.json')
+        assert len(w) == 1
+        assert 'Invalid year' in str(w[-1].message)
 
-    with pytest.raises(ValueError):
         worker = miner.Miner(2099, u'470610', from_file='oauth.json')
+        assert len(w) == 2
+        assert 'Invalid year' in str(w[-1].message)
 
-    with pytest.raises(ValueError):
-        worker = miner.Miner(2017, None, from_file='oauth.json')
+        worker = miner.Miner(2017, u'123abc', from_file='oauth.json')
+        assert len(w) == 3
+        assert 'Invalid league ID' in str(w[-1].message)
 
 #    This test case will be implemented when hooks into Yahoo are available.
 #    with pytest.raises(ValueError):
