@@ -28,8 +28,6 @@ class Miner(object):
 
     Parameters
     ----------
-    year : int
-        The calendar year to request data from
     league_id : str
         The assigned identifier for the league, as assigned by the provider
     from_file : str
@@ -62,7 +60,7 @@ class Miner(object):
             The query to pass to provider
 
         """
-        
+
         uri = base_uri+ query + '?format=json'
         response = self.token.session.get(uri)
 
@@ -70,6 +68,6 @@ class Miner(object):
             logger.info('Service returned status code %s', response.status_code)
             return None
 
-        result = json.loads(response.content, encoding='utf-8')
+        result = json.loads(str(response.content,'utf-8'))
 
         return result
