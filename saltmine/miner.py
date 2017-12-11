@@ -1,11 +1,9 @@
 from yahoo_oauth import OAuth2
 import os
-import logging
-import warnings
+import logging, warnings
+import json
 
-ids = [57, 49, 79, 101, 124, 153, 175, 199, 222, 242, 257, 273, 999, 331, 348, 359, 371]
-min_year = 2001
-# max_year = len(ids) + min_year
+base_uri = 'https://fantasysports.yahooapis.com/fantasy/v2/'
 
 logger = logging.getLogger(__name__)
 
@@ -39,16 +37,9 @@ class Miner(object):
 
     """
 
-    def __init__(self, year, league_id, from_file=None):    # future iterations may take OAuth key and secrets directly
+    def __init__(self, league_id, from_file=None):    # future iterations may take OAuth key and secrets directly
 
         logger.info('Creating Miner...')
-
-        if year < min_year:
-            warnings.warn('Invalid year')
-        try:
-            self.year = ids[year - min_year]
-        except IndexError:
-            warnings.warn('Invalid year')
 
         if not league_id.isnumeric():
             warnings.warn('Invalid league ID')
@@ -59,3 +50,26 @@ class Miner(object):
         else:
             self.from_file = from_file
             self.token = OAuth2(None, None, from_file=self.from_file)
+
+    def get(self, query):
+        """GET method for Miner.
+
+        Makes request to API using Miner's token and the passed query.
+
+        Parameters
+        ----------
+        query : str
+            The query to pass to provider
+
+        """
+        
+        uri = base_uri+ query + '?format=json'
+        response = self.token.session.get(uri)
+
+        if response.status_code != 200:
+            logger.info('Service returned status code %s', response.status_code)
+            return None
+
+        result = json.loads(response.content, encoding='utf-8')
+
+        return result
